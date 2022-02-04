@@ -1,0 +1,12 @@
+---
+- name: Ensure backup folder exits
+  hosts: all
+  tags: dir
+
+  tasks:
+    - name: task 1 - create backup folder
+      file:
+        path: "backups"
+        state: directory
+      delegate_to: rocky2.vm.jm
+      run_once: true
