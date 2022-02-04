@@ -8,6 +8,53 @@
 </head>
 <body>
 <pre>
+<span style="font-weight:bold;">diff --git a/backups/rocky3.vm.jm_rt1.cfg b/backups/rocky3.vm.jm_rt1.cfg</span>
+<span style="font-weight:bold;">index e602ebd..905bfda 100644</span>
+<span style="font-weight:bold;">--- a/backups/rocky3.vm.jm_rt1.cfg</span>
+<span style="font-weight:bold;">+++ b/backups/rocky3.vm.jm_rt1.cfg</span>
+<span style="color:teal;">@@ -59,12 +59,14 @@</span> redundancy
+ !
+ interface GigabitEthernet0/0
+  ip address 192.168.1.1 255.255.255.252
+<span style="color:green;">+</span><span style="color:green;"> description hello-goodbye</span>
+  duplex auto
+  speed auto
+  media-type rj45
+ !
+ interface GigabitEthernet0/1
+  ip address 192.168.1.5 255.255.255.252
+<span style="color:green;">+</span><span style="color:green;"> description goodbye-hello</span>
+  duplex auto
+  speed auto
+  media-type rj45
+<span style="font-weight:bold;">diff --git a/backups/rocky3.vm.jm_rt2.cfg b/backups/rocky3.vm.jm_rt2.cfg</span>
+<span style="font-weight:bold;">index fa86211..48fb03e 100644</span>
+<span style="font-weight:bold;">--- a/backups/rocky3.vm.jm_rt2.cfg</span>
+<span style="font-weight:bold;">+++ b/backups/rocky3.vm.jm_rt2.cfg</span>
+<span style="color:teal;">@@ -71,6 +71,7 @@</span> interface GigabitEthernet0/1
+ !
+ interface GigabitEthernet0/2
+  no ip address
+<span style="color:green;">+</span><span style="color:green;"> description AVAILABLE</span>
+  shutdown
+  duplex auto
+  speed auto
+<span style="color:teal;">@@ -78,6 +79,7 @@</span> interface GigabitEthernet0/2
+ !
+ interface GigabitEthernet0/3
+  no ip address
+<span style="color:green;">+</span><span style="color:green;"> description AVAILABLE</span>
+  shutdown
+  duplex auto
+  speed auto
+<span style="color:teal;">@@ -87,6 +89,7 @@</span> router bgp 65002
+  bgp log-neighbor-changes
+  neighbor 192.168.1.5 remote-as 65000
+  neighbor 192.168.1.5 prefix-list FILTER_RH_IN in
+<span style="color:green;">+</span><span style="color:green;"> neighbor 192.168.1.5 prefix-list FILTER_RH_OUT OUT</span>
+  neighbor 192.168.2.6 remote-as 65222
+  neighbor 192.168.2.6 local-as 65100
+ !
 </pre>
 </body>
 </html>
