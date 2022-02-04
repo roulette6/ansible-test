@@ -8,24 +8,35 @@
       git:
         repo: git@github.com:roulette6/ansible-test.git
         accept_hostkey: true
-        dest: /home/josue/ansible-test
+        dest: "{{ git_dir }}"
+        force: true
       delegate_to: rocky2.vm.jm
       run_once: true
 
 
-- name: Cat config file 
+- name: Cat config files
   hosts: rocky3.vm.jm
   tags: config
 
   tasks:
-    - name: task 1 - get running config
-      command: cat ~/running.txt
+    - name: task 1 of 4 - get running config for rt1
+      command: cat ~/rt1.txt
       register: cli_results
 
-    - name: task 2 - save config to file
+    - name: task 2 of 4 - save config to file
       copy:
         content: "{{ cli_results.stdout }}"
-        dest: "/home/josue/ansible-test/backups/{{ inventory_hostname }}.cfg"
+        dest: "{{ git_dir }}/backups/{{ inventory_hostname }}_rt1.cfg"
+      delegate_to: rocky2.vm.jm
+
+    - name: task 3 of 4 - get running config for rt2
+      command: cat ~/rt2.txt
+      register: cli_results
+
+    - name: task 4 of 4 - save config to file
+      copy:
+        content: "{{ cli_results.stdout }}"
+        dest: "{{ git_dir }}/backups/{{ inventory_hostname }}_rt2.cfg"
       delegate_to: rocky2.vm.jm
 
 
@@ -34,21 +45,38 @@
   tags: git
 
   tasks:
-    - name: Task 1 of 3 - Get current date and time
+    - name: Task 1 of 5 - Get current date and time
       command: date +"%F %T %Z"
       register: date
       delegate_to: rocky2.vm.jm
 
-    - name: Task 2 of 3 - Check directory status
-      shell: cd /home/josue/ansible-test && git status backups/*
+    - name: Task 2 of 5 - Check directory status
+      shell: "cd {{ git_dir }} && git status backups/*"
       register: git_status
       changed_when: false
       delegate_to: rocky2.vm.jm
       run_once: yes
 
-    - name: Task 3 of 3 - Commmit changes to Git
+    - name: Task 3 of 5 - Get git diff
+      tags: diff
+      shell: "cd {{ git_dir }} && git diff --color | aha > {{ git_dir }}/backups/diffs.html"
+      register: git_diff
+      when:
+        - not("nothing to commit" in git_status.stdout)
+      delegate_to: rocky2.vm.jm
+      run_once: yes
+
+    - name: Task 4 of 5 - Save output of git_diff
+      copy:
+        content: "{{ git_diff.stdout }}"
+        dest: "{{ git_dir }}/diff.txt"
+      run_once: yes
+      delegate_to: rocky2.vm.jm
+
+    - name: Task 3 of 5 - Commmit changes to Git
+      tags: commit
       shell: |
-        cd /home/josue/ansible-test
+        cd {{ git_dir }}
         git add backups/*
         git commit -m "Committing changes to running configs on {{ date.stdout }}"
         git push origin main
