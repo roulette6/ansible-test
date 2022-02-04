@@ -1,12 +1,25 @@
 ---
-- name: Ensure backup folder exits
+- name: Pull git project
   hosts: all
   tags: dir
 
   tasks:
-    - name: task 1 - create backup folder
-      file:
-        path: "backups"
-        state: directory
+    - name: task 1 - clone git repo
+      command: "git clone git@github.com:roulette6/ansible-test.git && cd ansible-test"
       delegate_to: rocky2.vm.jm
       run_once: true
+
+- name: Cat config file (pretend show run)
+  hosts: rocky3.vm.jm
+  tags: config
+
+  tasks:
+    - name: task 1 - get running config
+      command: cat ~/running.txt
+      register: cli_results
+        delegate_to: rocky2.vm.jm
+
+    - name: task 2 - save config to file
+      copy:
+        content: "{{ cli_results }}"
+        dest: "backups/{{ inventory_hostname }}.cfg"
