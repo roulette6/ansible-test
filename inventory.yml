@@ -1,7 +1,5 @@
 ---
 all:
-  children:
-    rockies:
-      hosts:
-        rocky2.vm.jm
-        rocky3.vm.jm
+  hosts:
+    rocky2.vm.jm:
+    rocky3.vm.jm:

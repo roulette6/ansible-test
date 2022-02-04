@@ -4,12 +4,16 @@
   tags: dir
 
   tasks:
-    - name: task 1 - clone git repo
-      command: "git clone git@github.com:roulette6/ansible-test.git && cd ansible-test"
+    - name: task 2 - clone git repo
+      git:
+        repo: git@github.com:roulette6/ansible-test.git
+        accept_hostkey: true
+        dest: /home/josue/ansible-test
       delegate_to: rocky2.vm.jm
       run_once: true
 
-- name: Cat config file (pretend show run)
+
+- name: Cat config file 
   hosts: rocky3.vm.jm
   tags: config
 
@@ -17,9 +21,9 @@
     - name: task 1 - get running config
       command: cat ~/running.txt
       register: cli_results
-        delegate_to: rocky2.vm.jm
 
     - name: task 2 - save config to file
       copy:
-        content: "{{ cli_results }}"
-        dest: "backups/{{ inventory_hostname }}.cfg"
+        content: "{{ cli_results.stdout }}"
+        dest: "/home/josue/ansible-test/backups/{{ inventory_hostname }}.cfg"
+      delegate_to: rocky2.vm.jm
