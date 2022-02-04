@@ -27,3 +27,32 @@
         content: "{{ cli_results.stdout }}"
         dest: "/home/josue/ansible-test/backups/{{ inventory_hostname }}.cfg"
       delegate_to: rocky2.vm.jm
+
+
+- name: Commit config and push
+  hosts: all
+  tags: git
+
+  tasks:
+    - name: Task 1 of 3 - Get current date and time
+      command: date +"%F %T %Z"
+      register: date
+      delegate_to: rocky2.vm.jm
+
+    - name: Task 2 of 3 - Check directory status
+      shell: cd /home/josue/ansible-test && git status backups/*
+      register: git_status
+      changed_when: false
+      delegate_to: rocky2.vm.jm
+      run_once: yes
+
+    - name: Task 3 of 3 - Commmit changes to Git
+      shell: |
+        cd /home/josue/ansible-test
+        git add backups/*
+        git commit -m "Committing changes to running configs on {{ date.stdout }}"
+        git push origin main
+      when:
+        - not("nothing to commit" in git_status.stdout)
+      delegate_to: rocky2.vm.jm
+      run_once: yes
