@@ -5,11 +5,11 @@
 
   tasks:
     - name: Copying file
+      connection: local
       copy:
         src: ssh_config
         dest: ~/.ssh/config
         mode: '0644'
-      delegate_to: localhost
       run_once: true
 
 - name: Pull git project
