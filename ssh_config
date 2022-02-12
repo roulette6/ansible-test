@@ -1,0 +1,5 @@
+Host foo
+  HostName foo.invalid.com
+
+Host bar
+  HostName bar.invalid.com
